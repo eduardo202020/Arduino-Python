@@ -4,11 +4,17 @@ void setup(){
     Serial.begin(921600);
     /*Esta linea va al inicio*/
     Serial.SetTimeout(1);
+    pinMode(LED_BUILTIN,OUTPUT);
+    digitalWrite(LED_BUILTIN,LOW);
 }
 
 void void loop(){
     while(Serial.avaible){
         String data = Serial.readString();
-        Serial.println(data);
+        if(data=='on'){
+            digitalWrite(LED_BUILTIN,HIGH);
+        }else{
+            digitalWrite(LED_BUILTIN,LOW);
+        }
     }
 }

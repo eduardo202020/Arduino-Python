@@ -9,6 +9,7 @@ void setup(){
 }
 
 void void loop(){
+    Seria.println("Something");
     while(Serial.avaible){
         String data = Serial.readString();
         if(data=='on'){

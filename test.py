@@ -7,10 +7,21 @@ ports = prt.comports()
 for p in ports:
     print(p)
 
-arduino = serial.Serial('COM6', 9600,baudrate=921600 , timeout=.1)
+arduino = serial.Serial(port='COM6', baudrate=921600 , timeout=.1)
+
+def read_write(x=None):
+    if(x is None):
+        if(arduino.in_waiting):
+            data = arduino.readline()
+            data = data.decode()
+            return data
+    else:
+        arduino.write(bytes(x,"utf-8"))
+
 
 while True:
-    status = input("LED Status(on/anything for off)")
-    arduino.write(bytes(status,"utf-8"))
-    time.sleep(0.1)
+    #status = input("LED Status(on/anything for off)")
+    #arduino.write(bytes(status,"utf-8"))
+    #time.sleep(0.1)
+    print(read_write())
   

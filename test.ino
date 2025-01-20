@@ -9,13 +9,15 @@ void setup(){
 }
 
 void void loop(){
-    Seria.println("Something");
+   
     while(Serial.avaible){
         String data = Serial.readString();
         if(data=='on'){
             digitalWrite(LED_BUILTIN,HIGH);
+            Serial.print(data);
         }else{
             digitalWrite(LED_BUILTIN,LOW);
+            Serial.print(data);
         }
     }
 }

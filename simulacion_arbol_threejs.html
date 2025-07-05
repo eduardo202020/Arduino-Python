@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌳 Simulación 3D de Árboles - Sistema de Riego Avanzado</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        #container {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        #controls {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-group {
+            display: inline-block;
+            margin: 10px 20px;
+            vertical-align: top;
+        }
+
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .slider-container {
+            margin: 8px 0;
+        }
+
+        .slider-container label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        input[type="range"] {
+            width: 120px;
+            accent-color: #4CAF50;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+
+        .status-good {
+            background-color: #4CAF50;
+        }
+
+        .status-warning {
+            background-color: #FF9800;
+        }
+
+        .status-danger {
+            background-color: #F44336;
+        }
+
+        .status-watering {
+            background-color: #2196F3;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🌳 Simulación 3D Realista - Sistema de Riego Inteligente</h1>
+
+    <div id="controls">
+        <div class="control-group">
+            <h3>🌳 Árbol 1</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp1-value">25</span>°C</label>
+                <input type="range" id="temp1" min="15" max="40" value="25" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum1-value">45</span>%</label>
+                <input type="range" id="hum1" min="0" max="100" value="45" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego1"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status1"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 2</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp2-value">26</span>°C</label>
+                <input type="range" id="temp2" min="15" max="40" value="26" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum2-value">40</span>%</label>
+                <input type="range" id="hum2" min="0" max="100" value="40" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego2"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status2"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 3</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp3-value">24</span>°C</label>
+                <input type="range" id="temp3" min="15" max="40" value="24" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum3-value">50</span>%</label>
+                <input type="range" id="hum3" min="0" max="100" value="50" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego3"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status3"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 4</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp4-value">27</span>°C</label>
+                <input type="range" id="temp4" min="15" max="40" value="27" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum4-value">38</span>%</label>
+                <input type="range" id="hum4" min="0" max="100" value="38" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego4"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status4"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 5</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp5-value">23</span>°C</label>
+                <input type="range" id="temp5" min="15" max="40" value="23" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum5-value">55</span>%</label>
+                <input type="range" id="hum5" min="0" max="100" value="55" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego5"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status5"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 6</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp6-value">28</span>°C</label>
+                <input type="range" id="temp6" min="15" max="40" value="28" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum6-value">42</span>%</label>
+                <input type="range" id="hum6" min="0" max="100" value="42" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego6"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status6"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 7</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp7-value">22</span>°C</label>
+                <input type="range" id="temp7" min="15" max="40" value="22" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum7-value">48</span>%</label>
+                <input type="range" id="hum7" min="0" max="100" value="48" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego7"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status7"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌳 Árbol 8</h3>
+            <div class="slider-container">
+                <label>🌡️ Temperatura: <span id="temp8-value">29</span>°C</label>
+                <input type="range" id="temp8" min="15" max="40" value="29" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>💧 Humedad: <span id="hum8-value">35</span>%</label>
+                <input type="range" id="hum8" min="0" max="100" value="35" step="1">
+            </div>
+            <div class="slider-container">
+                <label>
+                    <input type="checkbox" id="riego8"> 🚿 Activar Riego
+                    <span class="status-indicator" id="status8"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🌍 Ambiente</h3>
+            <div class="slider-container">
+                <label>🌪️ Viento: <span id="wind-value">2</span></label>
+                <input type="range" id="wind" min="0" max="10" value="2" step="0.5">
+            </div>
+            <div class="slider-container">
+                <label>☀️ Luz Solar: <span id="sunlight-value">80</span>%</label>
+                <input type="range" id="sunlight" min="0" max="100" value="80" step="5">
+            </div>
+            <div class="slider-container">
+                <label>💦 Presión del Agua: <span id="pressure-value">1.0</span></label>
+                <input type="range" id="pressure" min="0.5" max="2.0" value="1.0" step="0.1">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>📊 Estado</h3>
+            <div style="font-size: 12px;">
+                <div id="tree-health">Árbol 1: 100% | Árbol 2: 100% | Árbol 3: 100% | Árbol 4: 100%<br>Árbol 5: 100% |
+                    Árbol 6: 100% | Árbol 7: 100% | Árbol 8: 100%</div>
+                <div id="environmental-info">💨 Viento: Suave | ☀️ Sol: Óptimo</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="container"></div>
+
+    <div id="info">
+        <strong>🎮 Controles:</strong><br>
+        • Arrastrar: Rotar vista<br>
+        • Rueda: Zoom<br>
+        • Ajustar parámetros para ver efectos en tiempo real<br>
+        <br>
+        <strong>🌡️ Termómetros:</strong> Al lado de cada árbol<br>
+        <strong>🔧 Tuberías:</strong> Subterráneas individuales<br>
+        <strong>💧 Riego:</strong> Dispersión desde tubería
+    </div>
+
+    <!-- Scripts de Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Variables globales
+        let scene, camera, renderer, controls;
+        let trees = [], thermometers = [], pipelines = [], sprinklerSystems = [];
+        let waterParticles = [[], [], [], [], [], [], [], []];
+        let undergroundSystem, ground;
+        let animationId;
+
+        // Datos de los 8 árboles
+        let treeData = {
+            tree1: { temp: 25, humidity: 45, watering: false, health: 1.0 },
+            tree2: { temp: 26, humidity: 40, watering: false, health: 1.0 },
+            tree3: { temp: 24, humidity: 50, watering: false, health: 1.0 },
+            tree4: { temp: 27, humidity: 38, watering: false, health: 1.0 },
+            tree5: { temp: 23, humidity: 55, watering: false, health: 1.0 },
+            tree6: { temp: 28, humidity: 42, watering: false, health: 1.0 },
+            tree7: { temp: 22, humidity: 48, watering: false, health: 1.0 },
+            tree8: { temp: 29, humidity: 35, watering: false, health: 1.0 }
+        };
+
+        // Variables de sistema de riego
+        let waterPressure = 1.0;
+
+        // Configuración de la escena
+        function init() {
+            // Crear escena
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB); // Cielo azul
+
+            // Configurar cámara
+            camera = new THREE.PerspectiveCamera(75, (window.innerWidth - 40) / 600, 0.1, 1000);
+            camera.position.set(20, 15, 20);
+
+            // Configurar renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth - 40, 600);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            // Controles de órbita
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Crear iluminación
+            createLighting();
+
+            // Crear terreno
+            createGround();
+
+            // Crear sistema de tuberías subterráneas
+            createUndergroundPipelineSystem();
+
+            // Crear árboles con sensores
+            createAllTrees();
+
+            // Configurar controles
+            setupControls();
+
+            // Iniciar animación
+            animate();
+        }
+
+        function createLighting() {
+            // Luz ambiente
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+
+            // Luz direccional (sol)
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(50, 50, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 500;
+            scene.add(directionalLight);
+        }
+
+        function createGround() {
+            const groundGeometry = new THREE.PlaneGeometry(50, 50);
+            const groundMaterial = new THREE.MeshLambertMaterial({
+                color: 0x8FBC8F,
+                transparent: true,
+                opacity: 0.8
+            });
+            ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+        }
+
+        function createUndergroundPipelineSystem() {
+            undergroundSystem = new THREE.Group();
+
+            // Tubería principal subterránea más grande (para 8 árboles)
+            const mainPipeGeometry = new THREE.CylinderGeometry(0.5, 0.5, 40, 12);
+            const pipeMaterial = new THREE.MeshLambertMaterial({ color: 0x654321 });
+
+            const mainPipe = new THREE.Mesh(mainPipeGeometry, pipeMaterial);
+            mainPipe.rotation.z = Math.PI / 2;
+            mainPipe.position.set(0, -1.5, 0);
+            undergroundSystem.add(mainPipe);
+
+            // Posiciones de los 8 árboles en formación rectangular
+            const treePositions = [
+                { x: -12, z: -8 },   // Árbol 1
+                { x: -4, z: -8 },    // Árbol 2  
+                { x: 4, z: -8 },     // Árbol 3
+                { x: 12, z: -8 },    // Árbol 4
+                { x: -12, z: 8 },    // Árbol 5
+                { x: -4, z: 8 },     // Árbol 6
+                { x: 4, z: 8 },      // Árbol 7
+                { x: 12, z: 8 }      // Árbol 8
+            ];
+
+            // Crear tuberías y aspersores para cada árbol
+            for (let i = 0; i < 8; i++) {
+                const pos = treePositions[i];
+
+                // Tubería individual para cada árbol
+                const pipeGeometry = new THREE.CylinderGeometry(0.2, 0.2, 15, 8);
+                const pipeline = new THREE.Mesh(pipeGeometry, pipeMaterial);
+                pipeline.position.set(pos.x, -1.2, pos.z / 2);
+                pipeline.rotation.x = Math.PI / 2;
+                undergroundSystem.add(pipeline);
+
+                // Conexión vertical
+                const connection = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.15, 0.15, 2.5, 8),
+                    pipeMaterial
+                );
+                connection.position.set(pos.x, -0.25, pos.z);
+                undergroundSystem.add(connection);
+
+                // Crear aspersor para este árbol
+                const sprinklerSystem = createSprinklerSystem(pos.x, pos.z);
+                sprinklerSystems.push(sprinklerSystem);
+                scene.add(sprinklerSystem);
+
+                // Guardar referencia de la tubería
+                pipelines.push(pipeline);
+            }
+
+            scene.add(undergroundSystem);
+        }
+
+        function createSprinklerSystem(x, z) {
+            const sprinklerGroup = new THREE.Group();
+
+            // Base del aspersor (saliendo del suelo)
+            const sprinklerBase = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.15, 0.2, 0.8, 8),
+                new THREE.MeshLambertMaterial({ color: 0x333333 })
+            );
+            sprinklerBase.position.set(0, 0.4, 0);
+            sprinklerGroup.add(sprinklerBase);
+
+            // Cabezal del aspersor
+            const sprinklerHead = new THREE.Mesh(
+                new THREE.SphereGeometry(0.2, 8, 8),
+                new THREE.MeshLambertMaterial({ color: 0x444444 })
+            );
+            sprinklerHead.position.set(0, 0.8, 0);
+            sprinklerGroup.add(sprinklerHead);
+
+            // Boquillas de aspersión direccionales
+            for (let i = 0; i < 8; i++) {
+                const angle = (i * Math.PI * 2) / 8;
+                const nozzle = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.03, 0.03, 0.15, 6),
+                    new THREE.MeshLambertMaterial({ color: 0x666666 })
+                );
+                const radius = 0.25;
+                nozzle.position.set(
+                    Math.cos(angle) * radius,
+                    0.8,
+                    Math.sin(angle) * radius
+                );
+                nozzle.rotation.x = Math.PI / 6;
+                nozzle.rotation.y = angle;
+                sprinklerGroup.add(nozzle);
+            }
+
+            sprinklerGroup.position.set(x, 0, z);
+            return sprinklerGroup;
+        }
+
+        function createAllTrees() {
+            // Posiciones de los 8 árboles en formación rectangular
+            const treePositions = [
+                { x: -12, z: -8 },   // Árbol 1
+                { x: -4, z: -8 },    // Árbol 2  
+                { x: 4, z: -8 },     // Árbol 3
+                { x: 12, z: -8 },    // Árbol 4
+                { x: -12, z: 8 },    // Árbol 5
+                { x: -4, z: 8 },     // Árbol 6
+                { x: 4, z: 8 },      // Árbol 7
+                { x: 12, z: 8 }      // Árbol 8
+            ];
+
+            for (let i = 0; i < 8; i++) {
+                const pos = treePositions[i];
+
+                // Crear árbol
+                const tree = createTree(pos.x, pos.z, i);
+                trees.push(tree);
+                scene.add(tree);
+
+                // Crear termómetro al lado del árbol
+                const thermometer = createThermometer(pos.x + 3, pos.z);
+                thermometers.push(thermometer);
+                scene.add(thermometer);
+            }
+        }
+
+        function createTree(x, z, treeIndex) {
+            const treeGroup = new THREE.Group();
+
+            // Variaciones en los árboles para diversidad
+            const trunkRadius = 0.4 + Math.random() * 0.3;
+            const trunkHeight = 3.5 + Math.random() * 1;
+            const foliageCount = 5 + Math.floor(Math.random() * 3);
+
+            // Tronco
+            const trunkGeometry = new THREE.CylinderGeometry(trunkRadius * 0.8, trunkRadius, trunkHeight, 10);
+            const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+            trunk.position.y = trunkHeight / 2;
+            trunk.castShadow = true;
+            treeGroup.add(trunk);
+
+            // Copa del árbol con variaciones
+            const foliageColors = [0x228B22, 0x32CD32, 0x006400, 0x2E8B57, 0x3CB371];
+            for (let i = 0; i < foliageCount; i++) {
+                const foliageGeometry = new THREE.SphereGeometry(1.5 + Math.random() * 0.8, 10, 8);
+                const foliageMaterial = new THREE.MeshLambertMaterial({
+                    color: foliageColors[Math.floor(Math.random() * foliageColors.length)]
+                });
+                const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
+                foliage.position.set(
+                    (Math.random() - 0.5) * 2.5,
+                    trunkHeight + Math.random() * 1.5,
+                    (Math.random() - 0.5) * 2.5
+                );
+                foliage.castShadow = true;
+                treeGroup.add(foliage);
+            }
+
+            // Frutas (cantidad variable por árbol)
+            const fruitCount = 8 + Math.floor(Math.random() * 6);
+            const fruitColors = [0xFF6347, 0xFF8C00, 0xFFD700, 0x8B0000];
+            for (let i = 0; i < fruitCount; i++) {
+                const fruitGeometry = new THREE.SphereGeometry(0.12 + Math.random() * 0.08, 6, 6);
+                const fruitMaterial = new THREE.MeshLambertMaterial({
+                    color: fruitColors[treeIndex % fruitColors.length]
+                });
+                const fruit = new THREE.Mesh(fruitGeometry, fruitMaterial);
+                fruit.position.set(
+                    (Math.random() - 0.5) * 3,
+                    trunkHeight + Math.random() * 2,
+                    (Math.random() - 0.5) * 3
+                );
+                treeGroup.add(fruit);
+            }
+
+            treeGroup.position.set(x, 0, z);
+            return treeGroup;
+        }
+
+        function createThermometer(x, z) {
+            const thermometerGroup = new THREE.Group();
+
+            // Poste de soporte
+            const post = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.05, 0.05, 4, 8),
+                new THREE.MeshLambertMaterial({ color: 0x888888 })
+            );
+            post.position.y = 2;
+            thermometerGroup.add(post);
+
+            // Caja del termómetro
+            const thermometerCase = new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, 1.5, 0.1),
+                new THREE.MeshLambertMaterial({ color: 0xEEEEEE })
+            );
+            thermometerCase.position.set(0, 3, 0);
+            thermometerGroup.add(thermometerCase);
+
+            // Tubo de mercurio/líquido
+            const tube = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.04, 0.04, 1.2, 8),
+                new THREE.MeshLambertMaterial({ color: 0xCCCCCC })
+            );
+            tube.position.set(0, 3, 0.05);
+            thermometerGroup.add(tube);
+
+            // Bulbo del termómetro
+            const bulb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.08, 12, 12),
+                new THREE.MeshLambertMaterial({ color: 0xFF0000 })
+            );
+            bulb.position.set(0, 2.3, 0.05);
+            thermometerGroup.add(bulb);
+
+            // Líquido del termómetro (variable según temperatura)
+            const liquid = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.03, 0.03, 1, 8),
+                new THREE.MeshLambertMaterial({ color: 0xFF4444 })
+            );
+            liquid.position.set(0, 2.8, 0.05);
+            thermometerGroup.add(liquid);
+
+            // Escala del termómetro con números
+            for (let i = 0; i < 6; i++) {
+                const mark = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.15, 0.02, 0.02),
+                    new THREE.MeshLambertMaterial({ color: 0x000000 })
+                );
+                mark.position.set(0.2, 2.4 + i * 0.2, 0.05);
+                thermometerGroup.add(mark);
+            }
+
+            // Etiqueta de temperatura digital
+            const labelGeometry = new THREE.PlaneGeometry(0.4, 0.2);
+            const labelMaterial = new THREE.MeshLambertMaterial({
+                color: 0x000000,
+                transparent: true,
+                opacity: 0.8
+            });
+            const label = new THREE.Mesh(labelGeometry, labelMaterial);
+            label.position.set(0, 3.8, 0.05);
+            thermometerGroup.add(label);
+
+            thermometerGroup.position.set(x, 0, z);
+            thermometerGroup.castShadow = true;
+            return thermometerGroup;
+        }
+
+        function createWaterParticleSpray(treeIndex, treePosition, isActive) {
+            if (!isActive || treeIndex >= 8) return;
+
+            // Crear múltiples partículas desde la tubería subterránea
+            for (let i = 0; i < 8; i++) {
+                const geometry = new THREE.SphereGeometry(0.08, 6, 6);
+                const material = new THREE.MeshLambertMaterial({
+                    color: 0x00BFFF,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                const particle = new THREE.Mesh(geometry, material);
+
+                // Posición inicial desde el aspersor
+                const angle = (i * Math.PI * 2) / 8 + Math.random() * 0.5;
+                const radius = 1 + Math.random() * 2;
+
+                particle.position.set(
+                    treePosition.x + Math.cos(angle) * radius,
+                    0.8 + Math.random() * 1.5,
+                    treePosition.z + Math.sin(angle) * radius
+                );
+
+                // Velocidad inicial con dispersión
+                particle.velocity = new THREE.Vector3(
+                    Math.cos(angle) * waterPressure * 0.1,
+                    0.2 + Math.random() * 0.3 * waterPressure,
+                    Math.sin(angle) * waterPressure * 0.1
+                );
+
+                particle.life = 1.0;
+                particle.gravity = -0.02;
+
+                scene.add(particle);
+
+                // Añadir a la lista correspondiente del árbol
+                waterParticles[treeIndex].push(particle);
+            }
+        }
+
+        function updateWaterParticles() {
+            // Posiciones de los 8 árboles
+            const treePositions = [
+                { x: -12, z: -8 },   // Árbol 1
+                { x: -4, z: -8 },    // Árbol 2  
+                { x: 4, z: -8 },     // Árbol 3
+                { x: 12, z: -8 },    // Árbol 4
+                { x: -12, z: 8 },    // Árbol 5
+                { x: -4, z: 8 },     // Árbol 6
+                { x: 4, z: 8 },      // Árbol 7
+                { x: 12, z: 8 }      // Árbol 8
+            ];
+
+            // Generar partículas para cada árbol activo
+            for (let treeIndex = 0; treeIndex < 8; treeIndex++) {
+                const treeKey = `tree${treeIndex + 1}`;
+                if (treeData[treeKey].watering) {
+                    if (Math.random() < 0.3) {
+                        createWaterParticleSpray(treeIndex, treePositions[treeIndex], true);
+                    }
+                }
+
+                // Actualizar y remover partículas de este árbol
+                for (let i = waterParticles[treeIndex].length - 1; i >= 0; i--) {
+                    const particle = waterParticles[treeIndex][i];
+
+                    particle.position.add(particle.velocity);
+                    particle.velocity.y += particle.gravity;
+                    particle.life -= 0.02;
+                    particle.material.opacity = particle.life;
+
+                    if (particle.life <= 0 || particle.position.y < 0) {
+                        scene.remove(particle);
+                        waterParticles[treeIndex].splice(i, 1);
+                    }
+                }
+            }
+        }
+
+        function updateThermometers() {
+            // Actualizar todos los termómetros
+            for (let i = 0; i < 8; i++) {
+                const thermometer = thermometers[i];
+                const treeKey = `tree${i + 1}`;
+                const temp = treeData[treeKey].temp;
+
+                if (thermometer) {
+                    const liquidHeight = Math.max(0.2, (temp - 15) / 25 * 1.0);
+                    const liquid = thermometer.children.find(child =>
+                        child.material && child.material.color &&
+                        (child.material.color.getHex() === 0xFF4444 ||
+                            child.material.color.getHex() === 0xFF0000 ||
+                            child.material.color.getHex() === 0xFF8888 ||
+                            child.material.color.getHex() === 0x4444FF)
+                    );
+                    if (liquid) {
+                        liquid.scale.y = liquidHeight;
+                        liquid.position.y = 2.3 + liquidHeight * 0.5;
+
+                        // Color según temperatura
+                        if (temp > 35) liquid.material.color.setHex(0xFF0000);
+                        else if (temp > 30) liquid.material.color.setHex(0xFF4444);
+                        else if (temp > 20) liquid.material.color.setHex(0xFF8888);
+                        else liquid.material.color.setHex(0x4444FF);
+                    }
+                }
+            }
+        }
+
+        function updateTreeHealth() {
+            // Calcular salud para todos los 8 árboles
+            for (let i = 0; i < 8; i++) {
+                const treeKey = `tree${i + 1}`;
+                let health = 1.0;
+
+                // Aplicar penalizaciones por condiciones adversas
+                if (treeData[treeKey].temp > 35) health -= 0.3;
+                if (treeData[treeKey].temp < 18) health -= 0.2;
+                if (treeData[treeKey].humidity < 30) health -= 0.4;
+                if (treeData[treeKey].humidity > 80) health -= 0.2;
+
+                treeData[treeKey].health = Math.max(0.3, health);
+
+                // Aplicar efectos visuales al árbol
+                if (trees[i]) {
+                    updateTreeAppearance(trees[i], treeData[treeKey].health);
+                }
+            }
+        }
+
+        function updateTreeAppearance(tree, health) {
+            tree.children.forEach(child => {
+                if (child.material && child.material.color) {
+                    const currentColor = child.material.color.getHex();
+                    if (currentColor === 0x228B22 || currentColor === 0x32CD32 ||
+                        currentColor === 0x006400 || currentColor === 0x2E8B57 ||
+                        currentColor === 0x3CB371 || currentColor === 0x008B00) {
+                        // Es follaje
+                        const greenIntensity = health;
+                        child.material.color.setRGB(
+                            0.1 + (1 - health) * 0.3,
+                            greenIntensity,
+                            0.1
+                        );
+                    }
+                }
+            });
+
+            // Animación de balanceo con viento
+            const windForce = parseFloat(document.getElementById('wind').value);
+            const swayAmount = windForce * 0.05 * health;
+            tree.rotation.z = Math.sin(Date.now() * 0.001) * swayAmount;
+        }
+
+        function setupControls() {
+            // Configurar controles para todos los 8 árboles
+            for (let i = 1; i <= 8; i++) {
+                const treeKey = `tree${i}`;
+
+                // Control de temperatura
+                document.getElementById(`temp${i}`).addEventListener('input', (e) => {
+                    treeData[treeKey].temp = parseFloat(e.target.value);
+                    document.getElementById(`temp${i}-value`).textContent = e.target.value;
+                    updateStatus();
+                });
+
+                // Control de humedad
+                document.getElementById(`hum${i}`).addEventListener('input', (e) => {
+                    treeData[treeKey].humidity = parseFloat(e.target.value);
+                    document.getElementById(`hum${i}-value`).textContent = e.target.value;
+                    updateStatus();
+                });
+
+                // Control de riego
+                document.getElementById(`riego${i}`).addEventListener('change', (e) => {
+                    treeData[treeKey].watering = e.target.checked;
+                    updateStatus();
+                });
+            }
+
+            // Controles ambientales
+            document.getElementById('wind').addEventListener('input', (e) => {
+                document.getElementById('wind-value').textContent = e.target.value;
+                updateEnvironmentalInfo();
+            });
+
+            document.getElementById('sunlight').addEventListener('input', (e) => {
+                document.getElementById('sunlight-value').textContent = e.target.value;
+                updateEnvironmentalInfo();
+            });
+
+            document.getElementById('pressure').addEventListener('input', (e) => {
+                waterPressure = parseFloat(e.target.value);
+                document.getElementById('pressure-value').textContent = e.target.value;
+            });
+        }
+
+        function updateStatus() {
+            updateThermometers();
+
+            // Actualizar indicadores de estado para todos los árboles
+            for (let i = 1; i <= 8; i++) {
+                const treeKey = `tree${i}`;
+                updateStatusIndicator(`status${i}`, treeData[treeKey]);
+            }
+
+            // Actualizar información de salud de todos los árboles
+            let healthInfo = '';
+            for (let i = 1; i <= 4; i++) {
+                const treeKey = `tree${i}`;
+                healthInfo += `Árbol ${i}: ${(treeData[treeKey].health * 100).toFixed(0)}%`;
+                if (i < 4) healthInfo += ' | ';
+            }
+            healthInfo += '<br>';
+            for (let i = 5; i <= 8; i++) {
+                const treeKey = `tree${i}`;
+                healthInfo += `Árbol ${i}: ${(treeData[treeKey].health * 100).toFixed(0)}%`;
+                if (i < 8) healthInfo += ' | ';
+            }
+
+            document.getElementById('tree-health').innerHTML = healthInfo;
+        }
+
+        function updateStatusIndicator(elementId, treeInfo) {
+            const element = document.getElementById(elementId);
+
+            if (treeInfo.watering) {
+                element.className = 'status-indicator status-watering';
+            } else if (treeInfo.humidity < 30 || treeInfo.temp > 35) {
+                element.className = 'status-indicator status-danger';
+            } else if (treeInfo.humidity < 40 || treeInfo.temp > 30) {
+                element.className = 'status-indicator status-warning';
+            } else {
+                element.className = 'status-indicator status-good';
+            }
+        }
+
+        function updateEnvironmentalInfo() {
+            const wind = parseFloat(document.getElementById('wind').value);
+            const sunlight = parseFloat(document.getElementById('sunlight').value);
+
+            let windDesc = wind < 3 ? 'Suave' : wind < 6 ? 'Moderado' : 'Fuerte';
+            let sunDesc = sunlight < 40 ? 'Bajo' : sunlight < 70 ? 'Medio' : 'Óptimo';
+
+            document.getElementById('environmental-info').innerHTML =
+                `💨 Viento: ${windDesc} | ☀️ Sol: ${sunDesc}`;
+        }
+
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+
+            controls.update();
+            updateWaterParticles();
+            updateTreeHealth();
+            updateThermometers();
+
+            renderer.render(scene, camera);
+        }
+
+        // Manejar redimensionamiento
+        window.addEventListener('resize', () => {
+            camera.aspect = (window.innerWidth - 40) / 600;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth - 40, 600);
+        });
+
+        // Inicializar cuando se carga la página
+        window.addEventListener('load', () => {
+            init();
+            updateStatus();
+            updateEnvironmentalInfo();
+        });
+    </script>
+</body>
+
+</html>

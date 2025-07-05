@@ -51,6 +51,7 @@ class ControladorSimple:
         if response and response.startswith("DATOS:"):
             try:
                 datos_raw = response.replace("DATOS:", "").split(",")
+                # Estructura actualizada para incluir nuevos sensores
                 self.datos = {
                     'humedad1': float(datos_raw[0]),
                     'humedad2': float(datos_raw[1]),
@@ -59,6 +60,16 @@ class ControladorSimple:
                     'bomba1_activa': bool(int(datos_raw[4])),
                     'bomba2_activa': bool(int(datos_raw[5]))
                 }
+                
+                # Añadir nuevos sensores si están disponibles
+                if len(datos_raw) >= 8:
+                    self.datos['temp_planta'] = float(datos_raw[6])
+                    self.datos['humedad_relativa'] = float(datos_raw[7])
+                else:
+                    # Valores por defecto si no están disponibles
+                    self.datos['temp_planta'] = 0.0
+                    self.datos['humedad_relativa'] = 0.0
+                
                 return True
             except Exception as e:
                 print(f"❌ Error parseando datos: {e}")
@@ -88,7 +99,7 @@ class ControladorSimple:
                 if line.startswith('HR:'):
                     parts = line.split(':')[1].split(',')
                     if len(parts) >= 7:
-                        self.historial.append({
+                        entrada = {
                             'indice': int(parts[0]),
                             'humedad1': float(parts[1]),
                             'humedad2': float(parts[2]),
@@ -96,7 +107,17 @@ class ControladorSimple:
                             'temperatura2': float(parts[4]),
                             'bomba1': bool(int(parts[5])),
                             'bomba2': bool(int(parts[6]))
-                        })
+                        }
+                        
+                        # Añadir nuevos sensores si están disponibles
+                        if len(parts) >= 9:
+                            entrada['temp_planta'] = float(parts[7])
+                            entrada['humedad_relativa'] = float(parts[8])
+                        else:
+                            entrada['temp_planta'] = 0.0
+                            entrada['humedad_relativa'] = 0.0
+                            
+                        self.historial.append(entrada)
             
             print(f"✅ Historial parseado: {len(self.historial)} entradas")
             
@@ -147,6 +168,14 @@ class ControladorSimple:
         print("-" * 40)
         print(f"🌡️ Temperaturas: Zona1={self.datos['temperatura1']:.1f}°C  Zona2={self.datos['temperatura2']:.1f}°C")
         print(f"💧 Humedad:      Zona1={self.datos['humedad1']:.1f}%   Zona2={self.datos['humedad2']:.1f}%")
+        
+        # Mostrar nuevos sensores si están disponibles
+        if 'temp_planta' in self.datos and self.datos['temp_planta'] > 0:
+            print(f"🌿 Temp. Planta:  {self.datos['temp_planta']:.1f}°C")
+            
+        if 'humedad_relativa' in self.datos and self.datos['humedad_relativa'] > 0:
+            print(f"🌫️ Hum. Relativa: {self.datos['humedad_relativa']:.1f}%")
+            
         print(f"🚿 Bombas:       Zona1={'🟢ON' if self.datos['bomba1_activa'] else '🔴OFF'}     Zona2={'🟢ON' if self.datos['bomba2_activa'] else '🔴OFF'}")
         print()
         
@@ -156,6 +185,12 @@ class ControladorSimple:
             print("-" * 40)
             print(f"🌡️ Temp promedio:  Z1={self.estadisticas['temp1_prom']:.1f}°C  Z2={self.estadisticas['temp2_prom']:.1f}°C")
             print(f"💧 Hum promedio:   Z1={self.estadisticas['hum1_prom']:.1f}%   Z2={self.estadisticas['hum2_prom']:.1f}%")
+            
+            # Mostrar estadísticas de nuevos sensores si están disponibles
+            if 'temp_planta_prom' in self.estadisticas:
+                print(f"🌿 Temp. Planta:   Promedio={self.estadisticas['temp_planta_prom']:.1f}°C")
+                print(f"🌫️ Hum. Relativa:  Promedio={self.estadisticas.get('humedad_relativa_prom', 0):.1f}%")
+            
             print(f"🚿 Tiempo riego:   Z1={self.estadisticas['bomba1_tiempo']:.1f}%    Z2={self.estadisticas['bomba2_tiempo']:.1f}%")
             print(f"📊 Rangos humedad: Z1=[{self.estadisticas['hum1_min']:.1f}-{self.estadisticas['hum1_max']:.1f}%] Z2=[{self.estadisticas['hum2_min']:.1f}-{self.estadisticas['hum2_max']:.1f}%]")
             print()
@@ -163,13 +198,27 @@ class ControladorSimple:
         # Historial
         if self.historial:
             print(f"📈 HISTORIAL (ÚLTIMAS 10 DE {len(self.historial)} ENTRADAS)")
-            print("-" * 80)
-            print(" #  | H1(%)  H2(%)  | T1(°C) T2(°C) | B1  B2")
-            print("-" * 50)
-            for i, h in enumerate(self.historial[-10:]):
-                b1 = "🟢" if h['bomba1'] else "🔴"
-                b2 = "🟢" if h['bomba2'] else "🔴"
-                print(f"{i+1:2d}. | {h['humedad1']:5.1f} {h['humedad2']:5.1f} | {h['temperatura1']:5.1f} {h['temperatura2']:5.1f} | {b1}  {b2}")
+            print("-" * 95)
+            
+            # Verificar si hay nuevos sensores en el historial
+            tiene_nuevos_sensores = any('temp_planta' in h and h['temp_planta'] > 0 for h in self.historial[-5:])
+            
+            if tiene_nuevos_sensores:
+                print(" #  | H1(%)  H2(%)  | T1(°C) T2(°C) | 🌿TP  🌫️HR  | B1  B2")
+                print("-" * 65)
+                for i, h in enumerate(self.historial[-10:]):
+                    b1 = "🟢" if h['bomba1'] else "🔴"
+                    b2 = "🟢" if h['bomba2'] else "🔴"
+                    tp = h.get('temp_planta', 0)
+                    hr = h.get('humedad_relativa', 0)
+                    print(f"{i+1:2d}. | {h['humedad1']:5.1f} {h['humedad2']:5.1f} | {h['temperatura1']:5.1f} {h['temperatura2']:5.1f} | {tp:4.1f} {hr:5.1f} | {b1}  {b2}")
+            else:
+                print(" #  | H1(%)  H2(%)  | T1(°C) T2(°C) | B1  B2")
+                print("-" * 50)
+                for i, h in enumerate(self.historial[-10:]):
+                    b1 = "🟢" if h['bomba1'] else "🔴"
+                    b2 = "🟢" if h['bomba2'] else "🔴"
+                    print(f"{i+1:2d}. | {h['humedad1']:5.1f} {h['humedad2']:5.1f} | {h['temperatura1']:5.1f} {h['temperatura2']:5.1f} | {b1}  {b2}")
             print()
             
             # Gráfico simple

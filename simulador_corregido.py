@@ -16,10 +16,12 @@ class SistemaRiegoSimulator:
         
         # Datos actuales
         self.datos = {
-            'humedad1': 45.2,
-            'humedad2': 38.7,
-            'temperatura1': 24.5,
-            'temperatura2': 26.1,
+            'humedad1': 45.2,              # Humedad suelo zona 1
+            'humedad2': 38.7,              # Humedad suelo zona 2
+            'temperatura1': 24.5,          # Temperatura ambiente zona 1
+            'temperatura2': 26.1,          # Temperatura ambiente zona 2
+            'temp_planta': 23.8,           # Temperatura de la planta (nueva)
+            'humedad_relativa': 65.2,      # Humedad relativa del entorno (nueva)
             'bomba1_activa': False,
             'bomba2_activa': False
         }
@@ -30,6 +32,8 @@ class SistemaRiegoSimulator:
             'humedad2': [],
             'temperatura1': [],
             'temperatura2': [],
+            'temp_planta': [],             # Nueva: temperatura planta
+            'humedad_relativa': [],        # Nueva: humedad relativa
             'bomba1_estados': [],
             'bomba2_estados': []
         }
@@ -55,19 +59,27 @@ class SistemaRiegoSimulator:
             hora = (i * 10.0 / 60.0)  # Cada entrada = 10 min
             factor_dia = math.sin((hora * math.pi) / 12.0)
             
-            # Temperatura con ciclo día/noche
+            # Temperatura ambiente con ciclo día/noche
             temp1 = 22.0 + (factor_dia * 8.0) + random.uniform(-2, 2)
             temp2 = 24.0 + (factor_dia * 6.0) + random.uniform(-2, 2)
             
-            # Humedad inversa a temperatura
+            # Temperatura de planta (ligeramente más baja que ambiente)
+            temp_planta = (temp1 + temp2) / 2 - 1.5 + random.uniform(-1, 1)
+            
+            # Humedad del suelo (inversa a temperatura)
             hum1 = 50.0 - (factor_dia * 15.0) + random.uniform(-5, 5)
             hum2 = 45.0 - (factor_dia * 12.0) + random.uniform(-5, 5)
             
-            # Límites
+            # Humedad relativa del entorno (mayor en la noche, menor en el día)
+            hum_relativa = 70.0 - (factor_dia * 25.0) + random.uniform(-8, 8)
+            
+            # Aplicar límites realistas
             temp1 = max(15.0, min(40.0, temp1))
             temp2 = max(15.0, min(40.0, temp2))
+            temp_planta = max(12.0, min(35.0, temp_planta))
             hum1 = max(10.0, min(90.0, hum1))
             hum2 = max(10.0, min(90.0, hum2))
+            hum_relativa = max(30.0, min(95.0, hum_relativa))
             
             # Estados de bombas
             bomba1 = hum1 < self.UMBRAL_HUMEDAD_MIN
@@ -76,16 +88,20 @@ class SistemaRiegoSimulator:
             # Agregar al historial
             self.historial['temperatura1'].append(round(temp1, 1))
             self.historial['temperatura2'].append(round(temp2, 1))
+            self.historial['temp_planta'].append(round(temp_planta, 1))
             self.historial['humedad1'].append(round(hum1, 1))
             self.historial['humedad2'].append(round(hum2, 1))
+            self.historial['humedad_relativa'].append(round(hum_relativa, 1))
             self.historial['bomba1_estados'].append(bomba1)
             self.historial['bomba2_estados'].append(bomba2)
         
         # Establecer datos actuales como los más recientes
         self.datos['temperatura1'] = self.historial['temperatura1'][-1]
         self.datos['temperatura2'] = self.historial['temperatura2'][-1]
+        self.datos['temp_planta'] = self.historial['temp_planta'][-1]
         self.datos['humedad1'] = self.historial['humedad1'][-1]
         self.datos['humedad2'] = self.historial['humedad2'][-1]
+        self.datos['humedad_relativa'] = self.historial['humedad_relativa'][-1]
         self.datos['bomba1_activa'] = self.historial['bomba1_estados'][-1]
         self.datos['bomba2_activa'] = self.historial['bomba2_estados'][-1]
     
@@ -98,12 +114,16 @@ class SistemaRiegoSimulator:
                 self.datos['humedad2'] += random.uniform(-1, 1)
                 self.datos['temperatura1'] += random.uniform(-0.3, 0.3)
                 self.datos['temperatura2'] += random.uniform(-0.3, 0.3)
+                self.datos['temp_planta'] += random.uniform(-0.2, 0.2)
+                self.datos['humedad_relativa'] += random.uniform(-2, 2)
                 
                 # Límites
                 self.datos['humedad1'] = max(0, min(100, self.datos['humedad1']))
                 self.datos['humedad2'] = max(0, min(100, self.datos['humedad2']))
                 self.datos['temperatura1'] = max(15, min(40, self.datos['temperatura1']))
                 self.datos['temperatura2'] = max(15, min(40, self.datos['temperatura2']))
+                self.datos['temp_planta'] = max(12, min(35, self.datos['temp_planta']))
+                self.datos['humedad_relativa'] = max(30, min(95, self.datos['humedad_relativa']))
                 
                 # Redondear
                 for key in self.datos:
@@ -118,7 +138,7 @@ class SistemaRiegoSimulator:
                     for key in self.historial:
                         self.historial[key].pop(0)
                 
-                for key in ['humedad1', 'humedad2', 'temperatura1', 'temperatura2']:
+                for key in ['humedad1', 'humedad2', 'temperatura1', 'temperatura2', 'temp_planta', 'humedad_relativa']:
                     self.historial[key].append(self.datos[key])
                 self.historial['bomba1_estados'].append(self.datos['bomba1_activa'])
                 self.historial['bomba2_estados'].append(self.datos['bomba2_activa'])
@@ -232,7 +252,7 @@ class SistemaRiegoSimulator:
     
     def generar_respuesta_estado(self):
         """Genera respuesta de estado"""
-        return f"DATOS:{self.datos['humedad1']},{self.datos['humedad2']},{self.datos['temperatura1']},{self.datos['temperatura2']},{1 if self.datos['bomba1_activa'] else 0},{1 if self.datos['bomba2_activa'] else 0}"
+        return f"DATOS:{self.datos['humedad1']},{self.datos['humedad2']},{self.datos['temperatura1']},{self.datos['temperatura2']},{1 if self.datos['bomba1_activa'] else 0},{1 if self.datos['bomba2_activa'] else 0},{self.datos['temp_planta']},{self.datos['humedad_relativa']}"
     
     def generar_respuesta_historial(self, num_entradas=24):
         """Genera respuesta con historial"""
@@ -246,7 +266,7 @@ class SistemaRiegoSimulator:
         
         for i in range(start_idx, len(self.historial['humedad1'])):
             idx = i - start_idx
-            respuesta += f"HR:{idx},{self.historial['humedad1'][i]},{self.historial['humedad2'][i]},{self.historial['temperatura1'][i]},{self.historial['temperatura2'][i]},{1 if self.historial['bomba1_estados'][i] else 0},{1 if self.historial['bomba2_estados'][i] else 0}\n"
+            respuesta += f"HR:{idx},{self.historial['humedad1'][i]},{self.historial['humedad2'][i]},{self.historial['temperatura1'][i]},{self.historial['temperatura2'][i]},{1 if self.historial['bomba1_estados'][i] else 0},{1 if self.historial['bomba2_estados'][i] else 0},{self.historial['temp_planta'][i]},{self.historial['humedad_relativa'][i]}\n"
         
         respuesta += "HISTORIAL_RECIENTE_FIN"
         return respuesta

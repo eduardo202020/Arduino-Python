@@ -1,185 +1,252 @@
-# 🌱 Sistema de Riego Inteligente Arduino-Python
+# 🌱 Sistema de Riego Inteligente Arduino-Python - Versión Profesional
 
-Sistema completo de riego automatizado con sensores, historial de datos y **dashboard web profesional con Streamlit**.
+Sistema completo de riego automatizado con **Dashboard Web Streamlit** que integra todas las funcionalidades: monitoreo en tiempo real, simulaciones 3D interactivas, y control avanzado de riego.
 
-## 📁 Archivos del Proyecto
+## 📁 Estructura del Proyecto (Optimizada)
 
 ```
 📦 Arduino-Python/
-├── 🤖 sistema_riego.ino          # Código Arduino completo
-├── 🔧 simulador_corregido.py     # Simulador backend (puerto 9999)
-├── 📊 controlador_corregido.py   # Dashboard terminal interactivo
-├── 🌐 dashboard_streamlit.py     # Dashboard web profesional
-├── 📋 requirements.txt           # Dependencias Python
-├── 🚀 run.sh                     # Menú principal de ejecución
-├── ⚡ start_dashboard.sh         # Inicio rápido dashboard web
-└── 📖 README.md                  # Esta documentación
+├── 🌐 dashboard_streamlit.py              # Dashboard principal con todas las funcionalidades
+├── 🌳 simulacion_arbol_threejs.html       # Simulación 3D independiente
+├── 📊 simulacion_arbol_threejs_streamlit.py # Componente Three.js para Streamlit
+├── 🤖 sistema_riego.ino                   # Código Arduino completo
+├── 🔧 simulador_corregido.py              # Backend de datos (opcional)
+├── 📊 controlador_corregido.py            # Controlador de respaldo (opcional)
+├── 📋 requirements.txt                    # Dependencias Python
+├── 🚀 run.sh                              # Script único de ejecución
+├── 📖 README.md                           # Esta documentación
+├── 📄 SIMULACION_ARBOLES_THREEJS.md       # Documentación específica Three.js
+├── 🗂️ .streamlit/                        # Configuración Streamlit
+└── 🗃️ .git/                              # Control de versiones
 ```
 
-## 🚀 Ejecución Rápida
+## ⚡ Ejecución Simplificada
 
-### **Dashboard Web Profesional (RECOMENDADO):**
+### **🌐 Dashboard Web Profesional (ÚNICO PUNTO DE ENTRADA):**
 
 ```bash
 ./run.sh
-# Elegir opción 3: Dashboard Web Streamlit
-
-# O inicio directo:
-./start_dashboard.sh
 ```
 
-### **Demo Terminal:**
+**El Dashboard incluye TODO:**
+- 📊 **Métricas en tiempo real** con gráficos interactivos
+- 🎮 **Simulación 3D con Plotly** integrada  
+- 🌳 **Simulación 3D de Árboles con Three.js** ultra-realista
+- 🌡️ **Termómetros visuales** en cada árbol
+- 🔧 **Sistema de tuberías subterráneas** con dispersión de agua
+- 🎛️ **Controles completos** de temperatura, humedad y riego
+- 📈 **Análisis automático** de salud de plantas
 
+### **📱 Acceso:**
+- **URL:** http://localhost:8501
+- **Pestañas disponibles:**
+  - 📊 **Dashboard Principal** - Métricas y gráficos
+  - 🎮 **Simulación 3D** - Visualización Plotly
+  - 🌳 **Árboles 3D** - Simulación Three.js realista
+
+## 🎯 Características Principales
+
+### 🌳 Simulación 3D Ultra-Realista
+- **Árboles detallados** con troncos, follaje multicapa y frutas
+- **Termómetros realistas** al lado de cada árbol
+- **Sistema de tuberías subterráneas** individuales
+- **Dispersión de agua** desde aspersores emergentes
+- **Efectos ambientales** (viento, luz solar, sombras)
+- **Navegación 3D completa** (rotar, zoom, desplazar)
+
+### 📊 Dashboard Integrado
+- **Gráficos interactivos** en tiempo real con Plotly
+- **Métricas de sensores** (temperatura, humedad del suelo)
+- **Control de riego** automático y manual
+- **Historial de datos** con análisis temporal
+- **Indicadores de salud** de las plantas
+
+### 🎛️ Control Avanzado
+- **Ajustes independientes** por árbol
+- **Control de presión** del agua (0.5x - 2.0x)
+- **Monitoreo visual** de temperatura con termómetros
+- **Estados visuales** con códigos de color
+- **Alertas automáticas** de condiciones críticas
+
+## 🔧 Instalación y Configuración
+
+### Prerequisitos
 ```bash
+# Python 3.7 o superior
+python3 --version
+
+# Git (para clonar el repositorio)
+git --version
+```
+
+### Instalación Automática
+```bash
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/Arduino-Python.git
+cd Arduino-Python
+
+# Ejecutar (instala dependencias automáticamente)
 ./run.sh
-# Elegir opción 4: Demo completo automático
 ```
 
-## 🔧 Características
-
-### 📊 **Sensores**
-
--  2 Sensores de humedad del suelo
--  2 Sensores de temperatura ambiente
--  Lecturas cada 2 segundos con variaciones realistas
-
-### 💧 **Control de Riego**
-
--  2 Bombas/válvulas independientes
--  Control automático basado en umbrales
--  Control manual desde dashboard
--  LED indicador de estado
-
-### 📈 **Historial y Análisis**
-
--  Historial de 144 entradas (24 horas simuladas)
--  Datos cada 10 minutos con ciclos día/noche
--  Estadísticas detalladas (min, max, promedio)
--  Gráficos de tendencias en texto ASCII
-
-### 🎮 **Dashboard Interactivo**
-
--  Estado en tiempo real de todos los sensores
--  Visualización de historial completo
--  Gráficos de temperatura y humedad
--  Control manual de bombas
--  Análisis estadístico automático
-
-## 📋 Opciones de Ejecución
-
-### **Opción 1: Demo Automático (Recomendado)**
-
+### Instalación Manual
 ```bash
-./run.sh  # Opción 3
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar dashboard
+streamlit run dashboard_streamlit.py
 ```
 
-Ejecuta simulador y controlador automáticamente.
+## 🤖 Configuración Arduino (Opcional)
 
-### **Opción 2: Manual (2 terminales)**
+### Hardware Requerido
+- **Arduino Uno/Nano** (o compatible)
+- **2x Sensores de humedad del suelo** (YL-69 o similar)
+- **2x Sensores de temperatura** (DS18B20 o DHT22)
+- **2x Relés o válvulas** para control de riego
+- **Bomba de agua** (5V o 12V)
+- **Protoboard y cables** de conexión
 
+### Carga del Código
 ```bash
-# Terminal 1:
-./run.sh  # Opción 1 (Simulador)
-
-# Terminal 2:
-./run.sh  # Opción 2 (Controlador)
+# 1. Abrir Arduino IDE
+# 2. Cargar archivo: sistema_riego.ino
+# 3. Seleccionar puerto serie
+# 4. Subir al Arduino
 ```
 
-### **Opción 3: Directo con Python**
+### Conexiones
+```
+Arduino Uno:
+├── A0 → Sensor humedad suelo 1
+├── A1 → Sensor humedad suelo 2  
+├── D2 → Sensor temperatura 1
+├── D3 → Sensor temperatura 2
+├── D7 → Relé bomba 1
+├── D8 → Relé bomba 2
+└── GND/5V → Alimentación sensores
+```
 
+## 🎮 Guía de Uso
+
+### 1. Iniciar el Sistema
 ```bash
-# Terminal 1:
-python3 simulador_corregido.py
-
-# Terminal 2:
-python3 controlador_corregido.py
+cd Arduino-Python
+./run.sh
 ```
 
-## 🤖 Uso con Arduino Físico
+### 2. Acceder al Dashboard
+- Abre automáticamente: http://localhost:8501
+- O manualmente en cualquier navegador
 
-1. **Subir código al Arduino:**
+### 3. Navegar por las Pestañas
 
-   ```cpp
-   // Usar sistema_riego.ino
-   ```
+#### 📊 Dashboard Principal
+- **Métricas actuales** de temperatura y humedad
+- **Gráficos históricos** de los últimos datos
+- **Controles de riego** manual
+- **Estados de salud** de las plantas
 
-2. **Conexiones de hardware:**
+#### 🎮 Simulación 3D (Plotly)
+- **Vista 3D interactiva** del campo de riego
+- **Campos de temperatura** visualizados como superficies
+- **Efectos de riego** en tiempo real
+- **Navegación libre** en 3D
 
-   ```
-   Sensores humedad: A0, A1
-   Sensores temperatura: A2, A3
-   Bombas: pines 2, 3
-   LED estado: pin 13
-   ```
+#### 🌳 Árboles 3D (Three.js)
+- **Árboles ultra-realistas** con detalles
+- **Termómetros funcionales** al lado de cada árbol
+- **Tuberías subterráneas** con aspersores
+- **Control individual** de cada árbol
+- **Efectos ambientales** avanzados
 
-3. **Modificar controlador:**
-   ```python
-   # En controlador_corregido.py cambiar:
-   # host='localhost', port=9999
-   # Por:
-   # puerto_serie = '/dev/ttyUSB0'  # Linux
-   # puerto_serie = 'COM3'          # Windows
-   ```
+### 4. Controles Disponibles
 
-## 🎯 Funciones del Dashboard
+#### Por Árbol:
+- 🌡️ **Temperatura:** 15°C - 40°C
+- 💧 **Humedad:** 0% - 100%  
+- 🚿 **Riego:** Activar/Desactivar
 
--  **Opción 1**: Actualizar datos
--  **Opción 2**: Modo automático
--  **Opción 3**: Ver estadísticas
--  **Opción 4-7**: Control manual bombas
--  **Opción 9**: Gráfico de humedad
--  **Opción 10**: Gráfico de temperatura
--  **Opción 0**: Salir
+#### Ambientales:
+- ☀️ **Luz Solar:** Intensidad 0% - 100%
+- 🌪️ **Viento:** Velocidad 0 - 10
+- 💦 **Presión Agua:** 0.5x - 2.0x
 
-## ⚙️ Configuración de Umbrales
+## 📈 Análisis y Métricas
 
-```cpp
-float UMBRAL_HUMEDAD_MIN = 30.0;  // Activar riego
-float UMBRAL_HUMEDAD_MAX = 70.0;  // Desactivar riego
-float UMBRAL_TEMP_MAX = 35.0;     // Riego frecuente
+### Indicadores de Salud
+| Color | Estado | Acción Recomendada |
+|-------|--------|-------------------|
+| 🟢 Verde | Óptimo | Mantener condiciones |
+| 🟡 Amarillo | Advertencia | Revisar parámetros |
+| 🔴 Rojo | Crítico | Acción inmediata |
+| 🔵 Azul | Regando | Sistema activo |
+
+### Parámetros Óptimos
+- **Temperatura:** 18°C - 28°C
+- **Humedad del suelo:** 40% - 70%
+- **Frecuencia de riego:** Según sensor
+- **Duración de riego:** 5-15 segundos
+
+## 🔧 Solución de Problemas
+
+### Error: "Module not found"
+```bash
+pip install -r requirements.txt
 ```
 
-## 📊 Formato de Datos
-
-### Estado Actual:
-
-```
-DATOS:45.2,38.7,24.5,26.1,0,1
-// humedad1,humedad2,temp1,temp2,bomba1,bomba2
+### Puerto ocupado (8501)
+```bash
+# Cambiar puerto manualmente
+streamlit run dashboard_streamlit.py --server.port 8502
 ```
 
-### Historial:
-
-```
-HR:0,45.2,38.7,24.5,26.1,0,1
-HR:1,46.1,39.2,24.8,26.3,0,0
-// índice,humedad1,humedad2,temp1,temp2,bomba1,bomba2
+### Simulación 3D no carga
+```bash
+# Verificar navegador (Chrome recomendado)
+# Verificar conexión a internet (Three.js CDN)
 ```
 
-### Estadísticas:
-
+### Arduino no conecta
+```bash
+# Verificar puerto serie
+# Comprobar drivers USB
+# Reiniciar Arduino IDE
 ```
-STATS:45.5,40.2,25.1,26.3,20.1,70.8,15.3,65.2,18.5,32.1,20.1,30.5,25.2,18.7
-// prom_h1,prom_h2,prom_t1,prom_t2,min_h1,max_h1,min_h2,max_h2,min_t1,max_t1,min_t2,max_t2,%bomba1,%bomba2
-```
 
-## 🔌 Comunicación
+## 🚀 Próximas Mejoras
 
--  **Puerto**: 9999 (TCP socket)
--  **Comandos**: STATUS, HISTORIAL_RECIENTE, ESTADISTICAS, BOMBA1_ON/OFF, BOMBA2_ON/OFF, AUTO
--  **Velocidad serie Arduino**: 921600 baud
+### 🌟 Funcionalidades Planificadas
+- **App móvil** con notificaciones push
+- **Machine Learning** para predicción de riego
+- **Integración IoT** con sensores inalámbricos
+- **Análisis de imágenes** para detección de plagas
+- **Sistema multi-zona** para grandes cultivos
 
-## 🧪 Datos de Prueba
+### 🔌 Integraciones
+- **Home Assistant** para domótica
+- **Google Assistant / Alexa** para control por voz
+- **Telegram Bot** para notificaciones
+- **Base de datos en la nube** para históricos
 
-El simulador genera automáticamente:
+## 📞 Soporte y Contribución
 
--  ✅ 144 entradas de historial (24 horas)
--  ✅ Ciclos día/noche realistas
--  ✅ Variaciones de temperatura y humedad
--  ✅ Estados de bombas basados en umbrales
--  ✅ Timestamps para análisis temporal
+### 🐛 Reportar Problemas
+- Crear issue en GitHub con detalles del error
+- Incluir logs de terminal y navegador
+- Especificar sistema operativo y versión Python
+
+### 🤝 Contribuir
+- Fork del repositorio
+- Crear rama para nueva funcionalidad
+- Enviar Pull Request con descripción detallada
+
+### 📧 Contacto
+- **GitHub:** [Tu usuario]
+- **Email:** [tu-email@ejemplo.com]
 
 ---
 
-**Desarrollado por: Jhunior (jguevaral@uni.pe)**  
-**Proyecto: Sistema de Riego Inteligente con Arduino y Python**
+**🌱 Sistema de Riego Inteligente - Versión Profesional**  
+_Dashboard Web completo con simulaciones 3D ultra-realistas_
